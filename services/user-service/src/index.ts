@@ -9,7 +9,7 @@ app.use(express.json()); // To parse JSON request bodies
 
 // Basic Health Check Route
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to the User Service!");
+  res.send("Welcome to the Userr Service!");
 });
 
 // Start the server
