@@ -1,0 +1,68 @@
+services:
+  # API Gateway (Nginx or Custom Express Gateway)
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    image: api-gateway
+    ports:
+      - "8080:80" # Expose the API Gateway on port 8080
+    depends_on:
+      - mongo-db
+    networks:
+      - app-network
+
+  # User Service (Authentication and Profile Management)
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    container_name: user-service
+    image: user-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo-db
+    networks:
+      - app-network
+    volumes:
+      - ./services/user-service/src:/app/services/user-service/src
+      - ./tsconfig.base.json:/app/tsconfig.base.json
+      - ./services/user-service/tsconfig.json:/app/services/user-service/tsconfig.json
+
+  # User Service (Authentication and Profile Management)
+  tour-service:
+    build:
+      context: .
+      dockerfile: services/tour-service/Dockerfile
+    container_name: tour-service
+    image: tour-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongo-db
+    networks:
+      - app-network
+    volumes:
+      - ./services/tour-service/src:/app/services/tour-service/src
+      - ./tsconfig.base.json:/app/tsconfig.base.json
+      - ./services/tour-service/tsconfig.json:/app/services/tour-service/tsconfig.json
+
+  # MongoDB (Single database for all services)
+  mongo-db:
+    image: mongo:latest
+    container_name: mongo-db
+    networks:
+      - app-network
+    volumes:
+      - mongo-db-data:/data/db
+
+# Networks to facilitate communication between services
+networks:
+  app-network:
+    driver: bridge
+
+# Volumes for data persistence across containers
+volumes:
+  mongo-db-data:
