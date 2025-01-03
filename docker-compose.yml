@@ -24,6 +24,8 @@ services:
       - "3001:3001"
     depends_on:
       - mongo-db
+    env_file:
+      - ./services/user-service/.env.dev
     networks:
       - app-network
     volumes:
@@ -57,6 +59,9 @@ services:
       - app-network
     volumes:
       - mongo-db-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
 
 # Networks to facilitate communication between services
 networks:
