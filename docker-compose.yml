@@ -1,57 +1,36 @@
 services:
-  # API Gateway (Nginx or Custom Express Gateway)
-  api-gateway:
-    build:
-      context: ./services/api-gateway
-      dockerfile: Dockerfile
-    container_name: api-gateway
-    image: api-gateway
-    ports:
-      - "8080:80" # Expose the API Gateway on port 8080
-    depends_on:
-      - mongo-db
-    networks:
-      - app-network
-
-  # User Service (Authentication and Profile Management)
-  user-service:
+  # Frontend
+  frontend:
     build:
       context: .
-      dockerfile: services/user-service/Dockerfile
-    container_name: user-service
-    image: user-service
+      dockerfile: frontend/Dockerfile
+    container_name: frontend
     ports:
-      - "3001:3001"
+      - "3000:3000"
+    networks:
+      - app-network
+    volumes:
+      - ./frontend:/app/frontend
+
+  # Backend
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: backend
+    ports:
+      - "8000:8000"
     depends_on:
       - mongo-db
     env_file:
-      - ./services/user-service/.env.dev
+      - ./backend/.env.dev
     networks:
       - app-network
     volumes:
-      - ./services/user-service/src:/app/services/user-service/src
-      - ./tsconfig.base.json:/app/tsconfig.base.json
-      - ./services/user-service/tsconfig.json:/app/services/user-service/tsconfig.json
+      - ./backend/src:/app/backend/src
+      - ./backend/tsconfig.json:/app/backend/tsconfig.json
 
-  # User Service (Authentication and Profile Management)
-  tour-service:
-    build:
-      context: .
-      dockerfile: services/tour-service/Dockerfile
-    container_name: tour-service
-    image: tour-service
-    ports:
-      - "3002:3002"
-    depends_on:
-      - mongo-db
-    networks:
-      - app-network
-    volumes:
-      - ./services/tour-service/src:/app/services/tour-service/src
-      - ./tsconfig.base.json:/app/tsconfig.base.json
-      - ./services/tour-service/tsconfig.json:/app/services/tour-service/tsconfig.json
-
-  # MongoDB (Single database for all services)
+  # MongoDB (Database)
   mongo-db:
     image: mongo:latest
     container_name: mongo-db

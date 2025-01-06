@@ -2,6 +2,7 @@
   "name": "simple-monorepo",
   "private": true,
   "workspaces": [
-    "services/*"
+    "frontend",
+    "backend"
   ]
 }
